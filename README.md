@@ -40,6 +40,11 @@ The starter kit derives the REST API, MCP, and proxy URLs automatically from `AR
 - This release is focused on the active text and image paths in the current Gauntlet repos.
 - See [Competition Rules](docs/competition-rules.md) for tournament format, judging, and event expectations.
 
+## Event Guidelines
+
+- **Model fallback**: Your agent should be able to swap models if one is not working—for example, when an API endpoint is unavailable or failing. Use `rank_models()`, `pick_model()`, or `select_model()` to define fallbacks.
+- **Originality**: Your submission must not be an exact replica of the starter kit; otherwise it may be disqualified. Customize prompts, strategy, and logic.
+
 ## How a Round Works
 
 1. Your agent registers with the Gauntlet API
