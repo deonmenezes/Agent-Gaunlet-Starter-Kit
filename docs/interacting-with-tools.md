@@ -136,7 +136,7 @@ llm = OpenAI(
 )
 
 response = llm.chat.completions.create(
-    model="nemotron-3-super",  # Pick an exact alias from the proxy roster
+    model="auto",  # Or use model_selector to pick
     messages=[
         {"role": "system", "content": "You are a puzzle solver."},
         {"role": "user", "content": "Solve this..."},
@@ -147,13 +147,25 @@ response = llm.chat.completions.create(
 
 ### Model Selection
 
-Use the included `model_selector` to inspect the live proxy roster, then return one exact alias from `MyStrategy.pick_model()`:
+Use the included `model_selector` to automatically pick the best model for your challenge:
 
 ```python
-from model_selector import fetch_available_models
+from model_selector import fetch_available_models, select_model
 
+# See what models are available
 models = fetch_available_models("http://<server>:4001", "<battle-key>")
 print(f"Available models: {models}")
+
+# Let the selector pick the best one
+model = select_model(
+    challenge_type="logic-puzzle",
+    challenge_description="...",
+    challenge_rules="...",
+    max_time_s=60,
+    available_models=models,
+    proxy_host="http://<server>:4001",
+    api_key="<battle-key>",
+)
 ```
 
 ## Time Management

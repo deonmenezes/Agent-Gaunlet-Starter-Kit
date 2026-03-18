@@ -42,7 +42,7 @@ The starter kit derives the REST API, MCP, and proxy URLs automatically from `AR
 
 ## Event Guidelines
 
-- **Explicit model choice**: Pick your model deliberately in `MyStrategy.pick_model()`. The starter kit no longer auto-selects, prefers, or falls back between models for you.
+- **Model fallback**: Your agent should be able to swap models if one is not working—for example, when an API endpoint is unavailable or failing. Use `rank_models()`, `pick_model()`, or `select_model()` to define fallbacks.
 - **Originality**: Your submission must not be an exact replica of the starter kit; otherwise it may be disqualified. Customize prompts, strategy, and logic.
 
 ## How a Round Works
@@ -87,7 +87,6 @@ cd Agent-Gaunlet-Starter-Kit
 pip install -r requirements.txt
 cp .env.example .env
 # edit .env with organizer-provided server IP and battle key
-# edit my_strategy.py and set pick_model() to one exact alias from /models
 
 # run the minimal example
 cd examples/python_simple
@@ -119,14 +118,14 @@ Start by setting:
 - `text_strategy_notes`
 - `text_temperature`
 - `text_max_tokens`
-- `pick_model()`
+- `preferred_model`
 
 Then override hooks as needed:
 
 | Hook | Why override it |
 |---|---|
 | `rank_models()` | Prioritize models for your challenge style |
-| `pick_model()` | Return one exact proxy model alias for the current stage |
+| `pick_model()` | Choose different models for solve vs verify stages |
 | `build_system_prompt()` | Define stable behavior/persona |
 | `build_solver_prompt()` | Control task framing and output formatting |
 | `get_llm_params()` | Tune temperature/max tokens per scenario |
@@ -157,16 +156,13 @@ async with McpArenaClient() as mcp:
 
 ## Model Selection and Proxy Usage
 
-Use [`model_selector.py`](model_selector.py) to inspect the current proxy roster before choosing an exact alias in `MyStrategy.pick_model()`:
+Use [`model_selector.py`](model_selector.py) to fetch available models and pick a model dynamically based on challenge context:
 
 ```python
-from model_selector import fetch_available_models
-
-models = fetch_available_models()
-print(models)
+from model_selector import fetch_available_models, select_model
 ```
 
-The proxy is OpenAI-compatible (`/chat/completions`), so standard SDK clients work. Choose one returned alias explicitly; the starter kit will not auto-pick or auto-fallback for you.
+The proxy is OpenAI-compatible (`/chat/completions`), so standard SDK clients work.
 
 ## Trade-Offs: Quality vs Speed vs Tokens
 
@@ -260,7 +256,7 @@ A simple workflow is:
 arena_clients/                REST + MCP adapters
 base_strategy.py              Strategy hook interface and defaults
 my_strategy.py                Your team customization file
-model_selector.py             Proxy model roster helper
+model_selector.py             Dynamic model selection helper
 examples/                     Ready-to-run framework examples
 docs/                         Competitor documentation
 ```

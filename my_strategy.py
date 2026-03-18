@@ -35,10 +35,5 @@ class MyStrategy(BaseStrategy):
         "Request standard-resolution output only and avoid HD or 4K images."
     )
 
-    def pick_model(self, stage: str, ranked_models: list[str], ctx) -> str:
-        _ = stage
-        _ = ranked_models
-        _ = ctx
-        # Return one exact alias from the proxy `/models` roster, for example:
-        # return "nemotron-3-super"
-        return ""
+    # Leave empty to keep autonomous model selection.
+    preferred_model = "minimax-m2.5"
