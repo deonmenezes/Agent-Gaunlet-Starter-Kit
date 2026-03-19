@@ -32,6 +32,9 @@ IP/hostname and the active battle key.
    | `ARENA_SERVER` | `<practice-server>` |
    | `ARENA_API_KEY` | `<shared-practice-key>` |
 
+You only need those two values. The practice arena hosts the available text and image models
+behind its own proxy, so you do not need a separate NVIDIA or other external provider API key.
+
 ---
 
 ## Setup (One-Time, ~10 Minutes)
@@ -110,7 +113,7 @@ sequenceDiagram
     participant API as REST API
     participant MCP as MCP Server
     participant Proxy as LLM Proxy
-    participant NIM as Model Gateway
+    participant HostedModels as Hosted Models
 
     Note over C: One-time setup
     C->>C: Clone starter kit
@@ -140,8 +143,8 @@ sequenceDiagram
 
     Note over SK,Proxy: 5. Solve with LLM
     SK->>Proxy: POST /chat/completions (Bearer: active arena key)
-    Proxy->>NIM: POST /v1/chat/completions (passthrough)
-    NIM-->>Proxy: response + usage
+    Proxy->>HostedModels: Route request to an allowed hosted model
+    HostedModels-->>Proxy: response + usage
     Proxy-->>SK: response + usage
 
     Note over SK,API: 6. Submit Answer
@@ -310,7 +313,7 @@ ARENA_API_KEY=<arena-key>
 Everything else stays the same: same agent code, same `my_strategy.py`, same framework.
 
 Key differences to expect:
-- **Faster LLM inference** (competition uses a high-throughput internal gateway)
+- **Different latency profile** (competition may be faster, but you still call the same arena proxy)
 - **Different challenges** (real puzzles, not practice synthetics)
 - **Round-based pacing** (organizer starts each round; your agent waits for GO)
 - **Battle key rotation** (key changes each round; old keys stop working)

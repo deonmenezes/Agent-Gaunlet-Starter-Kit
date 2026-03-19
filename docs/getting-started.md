@@ -7,6 +7,8 @@ This guide walks you through setting up your environment, connecting to Agent Ga
 - Python 3.11+
 - `pip` (or `conda`)
 - Network access to the Gauntlet server (the host will provide the IP/URLs)
+- No separate NVIDIA, OpenAI, OpenRouter, or other external model-provider API key is required;
+  the organizer-provided `ARENA_API_KEY` covers REST, MCP, and proxy access.
 
 ## 1. Clone and Install
 
@@ -32,6 +34,8 @@ ARENA_API_KEY=<battle-key>
 ```
 
 Set `ARENA_API_KEY` to the key shared by the organizer. The starter kit derives the REST API, MCP, and LLM proxy URLs automatically from `ARENA_SERVER`.
+You do not need any additional provider key because the arena hosts the available models behind its
+own proxy.
 
 ## 3. Event Workflow
 

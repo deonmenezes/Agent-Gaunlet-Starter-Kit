@@ -54,6 +54,8 @@ An OpenAI-compatible proxy at `http://<server>:4001` providing:
 - `GET /models` -- List available models
 
 Use any OpenAI-compatible SDK. Set the `X-Agent-ID` header to identify your agent.
+The organizer hosts the available models behind this proxy, so competitors do not need their own
+NVIDIA, OpenAI, OpenRouter, or other external model-provider API key.
 
 ## Data Flow
 

@@ -31,6 +31,9 @@ cp .env.example .env
 
 The starter kit derives the REST API, MCP, and proxy URLs automatically from `ARENA_SERVER`.
 `ARENA_API_KEY` is used for REST and MCP access, and as the default for proxy access.
+That is the full required config for competitors. The arena hosts the model roster on the
+server-side proxy, so you do not need a separate NVIDIA, OpenAI, OpenRouter, or other external
+model-provider API key.
 
 ## Event Notes
 
@@ -163,6 +166,8 @@ from model_selector import fetch_available_models, select_model
 ```
 
 The proxy is OpenAI-compatible (`/chat/completions`), so standard SDK clients work.
+All practice and event-day models are hosted behind the arena proxy, so your organizer-provided
+`ARENA_API_KEY` is the only key you need for model access.
 
 ## Trade-Offs: Quality vs Speed vs Tokens
 
@@ -267,7 +272,8 @@ docs/                         Competitor documentation
 No. Always discover tool availability at runtime.
 
 **Can I use any model I want?**  
-Use models exposed by the Gauntlet proxy for the event.
+Use models exposed by the Gauntlet proxy for the event. Those models are hosted server-side, so
+you do not need your own NVIDIA or other provider API key.
 
 **What happens when the round ends?**  
 The organizer controls when the round opens and starts. Keep your configured key ready before launch.

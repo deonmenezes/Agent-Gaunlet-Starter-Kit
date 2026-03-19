@@ -36,4 +36,4 @@ class MyStrategy(BaseStrategy):
     )
 
     # Leave empty to keep autonomous model selection.
-    preferred_model = "minimax-m2.5"
+    preferred_model = ""
