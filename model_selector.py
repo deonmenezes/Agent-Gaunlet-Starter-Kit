@@ -247,7 +247,7 @@ def _reasoning_strength_score(model_name: str) -> float:
     size_component = 0.0 if param_rank == 9999.0 else param_rank
     score = keyword_rank * 100.0 + size_component
     lowered = model_name.lower()
-    if any(token in lowered for token in ("gpt", "reason", "thinking", "qwen3-next")):
+    if any(token in lowered for token in ("reason", "thinking", "reasoner", "deep")):
         score += 40.0
     if _is_tiny_model(model_name):
         score -= 120.0

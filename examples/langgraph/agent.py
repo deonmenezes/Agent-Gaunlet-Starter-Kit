@@ -1093,13 +1093,20 @@ async def main() -> int:
         try:
             from openai import OpenAI
 
+            strict_retry_model = "default"
+            for candidate in [model_name, *candidate_models, *ranked_models, *available_models]:
+                normalized = str(candidate or "").strip()
+                if normalized:
+                    strict_retry_model = normalized
+                    break
+
             client = OpenAI(
                 base_url=llm_host,
                 api_key=llm_api_key,
                 default_headers=_build_proxy_headers(agent_id, usage_scope),
             )
             strict_response = client.chat.completions.create(
-                model="nemotron-nano-9b",
+                model=strict_retry_model,
                 messages=[
                     {"role": "system", "content": strict_system_msg},
                     {"role": "user", "content": f"Reasoning:\n\n{raw_content}\n\nExtract the final answer now."},

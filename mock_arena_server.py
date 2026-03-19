@@ -32,7 +32,7 @@ USAGE_SCOPE = "mock-round-1"
 DEFAULT_MODELS = [
     "mock-reasoner-small",
     "mock-reasoner-large",
-    "nemotron-nano-9b",
+    "mock-fast-general",
 ]
 CLUES: dict[str, str] = {
     "clue_1": "Alice finished before Bob.",
