@@ -32,6 +32,21 @@ if str(REPO_ROOT) not in sys.path:
 
 load_dotenv(REPO_ROOT / ".env")
 
+
+def _configure_console_encoding() -> None:
+    """Avoid Windows cp1252 crashes when printing unicode status text."""
+    for stream_name in ("stdout", "stderr"):
+        stream = getattr(sys, stream_name, None)
+        reconfigure = getattr(stream, "reconfigure", None)
+        if callable(reconfigure):
+            try:
+                reconfigure(encoding="utf-8", errors="replace")
+            except Exception:
+                pass
+
+
+_configure_console_encoding()
+
 from arena_clients import (
     HttpArenaClient,
     McpArenaClient,
@@ -46,14 +61,21 @@ from arena_clients import (
 from base_strategy import ChallengeContext
 from model_selector import fetch_available_models, select_model
 from my_strategy import MyStrategy
-from arena_tools import (
-    ArenaToolState,
-    ToolSpec,
-    build_crewai_tools,
-    classify_image_tool,
-    discover_tool_specs,
-    unsupported_required_fields,
-)
+try:
+    from arena_tools import (
+        ArenaToolState,
+        ToolSpec,
+        build_crewai_tools,
+        classify_image_tool,
+        discover_tool_specs,
+        unsupported_required_fields,
+    )
+
+    _HAS_ARENA_TOOLS = True
+    _ARENA_TOOLS_IMPORT_ERROR: Exception | None = None
+except Exception as exc:
+    _HAS_ARENA_TOOLS = False
+    _ARENA_TOOLS_IMPORT_ERROR = exc
 
 BLANK_PNG_DATA_URI = (
     "data:image/png;base64,"
@@ -66,6 +88,12 @@ STRATEGY = MyStrategy()
 
 
 def _check_dependencies() -> bool:
+    if not _HAS_ARENA_TOOLS:
+        print("Missing CrewAI bridge dependencies. Install with:")
+        print("  pip install -r examples/crewai/requirements.txt")
+        print(f"Error: {_ARENA_TOOLS_IMPORT_ERROR}")
+        return False
+
     try:
         from crewai import Agent, Crew, LLM, Task
         from crewai.tools import BaseTool
@@ -74,7 +102,7 @@ def _check_dependencies() -> bool:
         return True
     except ImportError as exc:
         print("Missing CrewAI dependencies. Install with:")
-        print("  pip install 'crewai[tools]' mcp")
+        print("  pip install -r examples/crewai/requirements.txt")
         print(f"Error: {exc}")
         return False
 

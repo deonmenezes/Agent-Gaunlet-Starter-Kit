@@ -28,10 +28,25 @@ from urllib.request import Request, urlopen
 from dotenv import load_dotenv
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
-if str(REPO_ROOT) not in sys.path: 
+if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 load_dotenv(REPO_ROOT / ".env")
+
+
+def _configure_console_encoding() -> None:
+    """Avoid Windows cp1252 crashes when printing unicode status text."""
+    for stream_name in ("stdout", "stderr"):
+        stream = getattr(sys, stream_name, None)
+        reconfigure = getattr(stream, "reconfigure", None)
+        if callable(reconfigure):
+            try:
+                reconfigure(encoding="utf-8", errors="replace")
+            except Exception:
+                pass
+
+
+_configure_console_encoding()
 
 from arena_clients import (
     HttpArenaClient,

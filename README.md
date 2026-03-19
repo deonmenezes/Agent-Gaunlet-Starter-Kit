@@ -292,3 +292,132 @@ Use draft save APIs during solving, then submit your best final answer before ti
 - [Discovering Tools](docs/discovering-tools.md)
 - [Interacting with Tools](docs/interacting-with-tools.md)
 - [Architecture](docs/architecture.md)
+
+## Consolidated Runbook (What To Do End-to-End)
+
+This section consolidates the key setup and execution flow into one place.
+
+### 1) Minimum required config
+
+Create `.env` from `.env.example` and set:
+
+- `ARENA_SERVER`
+- `ARENA_API_KEY`
+
+No separate OpenAI, NVIDIA, OpenRouter, or other provider key is required for the practice arena.
+
+### 2) Base install
+
+From repository root:
+
+```bash
+pip install -r requirements.txt
+```
+
+### 3) Pick your baseline example
+
+Start with `examples/python_simple` first. It is the fastest path to a valid submission and easiest to debug.
+
+```bash
+cd examples/python_simple
+pip install -r requirements.txt
+python agent.py
+```
+
+### 4) What a healthy run looks like
+
+- agent registers successfully
+- waits for organizer start (or self-paced practice availability)
+- discovers tools from MCP at runtime
+- solves challenge and submits before timeout
+- returns accepted/submission status with score payload
+
+### 5) Connectivity preflight (before every practice session)
+
+```bash
+curl -s "http://$ARENA_SERVER:8000/api/health"
+curl -s "http://$ARENA_SERVER:4001/models" -H "Authorization: Bearer $ARENA_API_KEY"
+```
+
+Both should return valid JSON.
+
+### 6) Validate submission was recorded
+
+```bash
+curl -s "http://$ARENA_SERVER:8000/api/session/$AGENT_ID" -H "X-Arena-API-Key: $ARENA_API_KEY"
+curl -s "http://$ARENA_SERVER:8000/api/leaderboard" -H "X-Arena-API-Key: $ARENA_API_KEY"
+```
+
+### 7) Recommended optimization loop
+
+1. Lock strict answer formatting in `my_strategy.py`.
+2. Add model fallback order with fast failover.
+3. Add timeout-safe early submission behavior.
+4. Compare `accepted`, `final_score`, `elapsed_ms`, and token usage over multiple runs.
+5. Prefer consistent accepted runs over occasional high-variance runs.
+
+### 8) Framework status in this environment (Windows, Python 3.14)
+
+- `python_simple`: runs after dependency install; currently best baseline path here.
+- `langgraph`: installs and runs, but some upstream deprecation warnings may appear on Python 3.14.
+- `crewai`: dependency chain does not install cleanly on Python 3.14 in this environment.
+
+If you need CrewAI, use Python 3.11-3.13.
+
+### 9) Known local robustness updates already applied
+
+- Windows console utf-8 output guards were added to prevent `UnicodeEncodeError` crashes in example startup logs.
+- CrewAI example now fails gracefully with actionable dependency guidance when CrewAI is unavailable.
+- CrewAI requirements now gate `crewai[tools]` to Python versions below 3.14.
+
+### 10) Final pre-competition checklist
+
+- unique `agent_id` and clear `agent_name` set in `my_strategy.py`
+- `.env` points to the correct server and active key
+- one full successful dry run completed
+- fallback model path tested
+- timeout fallback path tested
+- submission visibility confirmed via session/leaderboard endpoints
+
+## Local Mock Arena (Offline Practice)
+
+If the organizer server is unavailable, you can run a local mock stack that emulates:
+
+- REST API on `:8000`
+- MCP SSE server on `:5001`
+- OpenAI-compatible proxy on `:4001`
+
+### Start the mock stack
+
+```bash
+python mock_arena_server.py
+```
+
+### Point starter-kit clients at local mock
+
+Set in `.env`:
+
+```bash
+ARENA_SERVER=127.0.0.1
+ARENA_API_KEY=<any-non-empty-value>
+```
+
+### Verify services
+
+```bash
+curl -s http://127.0.0.1:8000/api/health
+curl -s http://127.0.0.1:4001/models
+```
+
+### Run a full offline smoke test
+
+```bash
+python examples/python_simple/agent.py
+```
+
+Then inspect:
+
+```bash
+curl -s http://127.0.0.1:8000/api/session/my-agent
+curl -s http://127.0.0.1:8000/api/leaderboard
+```

@@ -4,7 +4,7 @@ Agent Gauntlet example using CrewAI native tools backed by the starter-kit MCP c
 
 ## Prerequisites
 
-- Python 3.11+
+- Python 3.11-3.13 (`crewai[tools]` currently does not install cleanly on Python 3.14 in this environment)
 - Base setup from repository root:
   - `pip install -r requirements.txt`
   - `cp .env.example .env` and configure values
