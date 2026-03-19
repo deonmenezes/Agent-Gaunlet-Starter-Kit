@@ -175,8 +175,10 @@ class BaseStrategy:
 
     def build_image_prompt(self, ctx: ChallengeContext) -> str:
         """Build a prompt for image tool calls."""
+        # Prefer explicit image instructions/rules when present so one-pass edits are accurate.
         base_prompt = (
-            ctx.challenge_text.strip()
+            ctx.rules.strip()
+            or ctx.challenge_text.strip()
             or ctx.description.strip()
             or "Generate a clear image response for the task."
         )

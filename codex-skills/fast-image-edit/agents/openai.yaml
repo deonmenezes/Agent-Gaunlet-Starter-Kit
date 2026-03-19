@@ -1,0 +1,4 @@
+interface:
+  display_name: "Fast Image Edit"
+  short_description: "One-pass fast image challenge edits"
+  default_prompt: "Use $fast-image-edit to solve this image challenge in the fastest reliable way."

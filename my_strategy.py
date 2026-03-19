@@ -31,8 +31,10 @@ class MyStrategy(BaseStrategy):
 
     # Image challenge strategy
     image_strategy_notes = (
-        "Prefer image_edit when an input image is available. Keep rationale concise. "
-        "Request standard-resolution output only and avoid HD or 4K images."
+        "Prefer one-pass image_edit when an input image is available. "
+        "Avoid iterative retries unless the first output is clearly invalid. "
+        "For privacy tasks, blur all visible faces strongly while preserving non-face regions. "
+        "Keep rationale concise and request standard-resolution output only (no HD/4K)."
     )
 
     # Leave empty to keep autonomous model selection.
