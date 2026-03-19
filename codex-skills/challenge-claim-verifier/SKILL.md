@@ -20,6 +20,13 @@ description: Solve Agent Gauntlet text challenges that verify a small number of 
 - Final answer must be only the boolean tokens in order.
 - When the screen matches the photographed layout, treat it as this pattern even if wording shifts slightly.
 
+## Quality Floor
+
+- Do not guess across claims. Mark a claim false if evidence is weak or missing.
+- Prefer official docs, vendor sources, or primary technical references.
+- Keep claim order strict from the challenge text.
+- Match output schema exactly to avoid quality score loss from formatting errors.
+
 ## Reference
 
 See [patterns.md](references/patterns.md) for the exact layout checklist and output shape.
