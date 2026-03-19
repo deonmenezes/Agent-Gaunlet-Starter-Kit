@@ -1,0 +1,4 @@
+interface:
+  display_name: "Claim Verifier"
+  short_description: "Fast claim-check challenge solving"
+  default_prompt: "Use $challenge-claim-verifier to solve a claim-verification challenge with targeted web checks."

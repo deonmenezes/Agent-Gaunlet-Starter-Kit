@@ -1,0 +1,4 @@
+interface:
+  display_name: "Compact Output"
+  short_description: "Less tokens, same correctness"
+  default_prompt: "Use $compact-output to keep this concise and token-efficient."
